@@ -1,0 +1,603 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>lab05Mowen</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-10-14"><meta name="DC.source" content="lab05Mowen.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Problem 1</a></li><li><a href="#2">Problem 2</a></li><li><a href="#3">Problem 3</a></li><li><a href="#4">Local Helper Functions</a></li><li><a href="#5">Make Coefficient Vector</a></li><li><a href="#6">Calculate output of Divided Difference Interpolating Polynomial</a></li><li><a href="#7">Initialize Divided Differences Matrix F(n,n)</a></li><li><a href="#8">Generate Divided Differences Matrix F(n,n)</a></li></ul></div><h2 id="1">Problem 1</h2><p>Use divided differences to construct the interpolating polynomial of degree four for the following data:</p><pre class="codeinput"><span class="comment">%       x   | f(x)</span>
+<span class="comment">%       ---------------</span>
+<span class="comment">%       0.0 | -6.00000</span>
+<span class="comment">%       0.1 | -5.89483</span>
+<span class="comment">%       0.3 | -5.65014</span>
+<span class="comment">%       0.6 | -5.17788</span>
+<span class="comment">%       1.0 | -4.28172</span>
+
+fprintf(<span class="string">'Problem 1\n'</span>)
+
+<span class="comment">% create input and output data vectors</span>
+inData = [0.0, 0.1, 0.3, 0.6, 1.0];
+outData = [-6.00000, -5.89483, -5.65014, -5.17788, -4.28172];
+
+<span class="comment">%Intialized divided differences matrix</span>
+inFij = InitializeFij(outData);
+
+<span class="comment">% Generate divided differences matrix</span>
+startRow = 2;
+inFij = GenerateFij(inData, inFij, startRow);
+
+<span class="comment">% Create set of xVals in -0.5..1.5</span>
+xVals = [-0.5:0.1:1.5];
+<span class="comment">% Evaluate the interpolating polynomial at each xVals</span>
+yVals1a = CalcInterPoly(inFij, inData, xVals);
+
+<span class="comment">% Plot original data points and the interpolating polynomial on same graph</span>
+figure(1)
+plot(inData, outData, <span class="string">'ro'</span>)
+hold <span class="string">on</span>
+plot(xVals, yVals1a, <span class="string">'k-'</span>)
+
+<span class="comment">% 1b) Calculate f(0.9) using interpolating polynomial</span>
+inVec = [0.9];
+fof0point9 = CalcInterPoly(inFij, inData, inVec);
+fprintf(<span class="string">'Using the interpolating polynomial, f(0.9) is approximately %.6f\n'</span>, fof0point9);
+
+<span class="comment">% Problem 1c</span>
+
+<span class="comment">% Add f(1.1) = -3.99583 to data set</span>
+<span class="comment">% Define vector for additional input data</span>
+addInData = [1.1];
+<span class="comment">% Update inData vector with additional input data vector</span>
+inData = [inData, addInData];
+<span class="comment">% Define vector for additional output data</span>
+addOutData = [-3.99583];
+<span class="comment">% Update inData vector with additional output data vector</span>
+outData = [outData, addOutData];
+
+<span class="comment">% get size of additional output data vector</span>
+sizeOfAddOutData = length(addOutData);
+
+<span class="comment">% get size of Fij</span>
+[row, col] = size(inFij);
+
+<span class="comment">% append the additional output data to the end of Fij</span>
+inFij(row+1:1:row + sizeOfAddOutData,1) = [addOutData]';
+
+<span class="comment">%Fill in Fij for additional Data</span>
+startRow = row + 1;
+inFij = GenerateFij(inData, inFij, startRow);
+
+<span class="comment">% Calculate new yVals based on new interpolating polynomial</span>
+yVals1c = CalcInterPoly(inFij, inData, xVals);
+
+<span class="comment">% Plot origdata points and both interpolating polynomials on same graph</span>
+figure(2)
+plot(inData, outData, <span class="string">'ro'</span>)
+hold <span class="string">on</span>
+plot(xVals, yVals1a, <span class="string">'k-'</span>)
+hold <span class="string">on</span>
+plot(xVals, yVals1c, <span class="string">'b-'</span>)
+</pre><pre class="codeoutput">Problem 1
+</pre><img vspace="5" hspace="5" src="lab05Mowen_02.png" alt=""> <h2 id="2">Problem 2</h2><p>The fastest time ever recorded in the Kentucky Derby was by a horse named Secretariat in 1973. He covered the 1 1\4 mile track in 1:59.4 (one minute and 59.4 seconds). Times at the quarter-mile, half-mile, and mile poles were 0:25.2, 0:49.2, and 1:36.4. Use interpolation to predict the time at the three-quarter mile pole and compare this to the actual time of 1:13.</p><pre class="codeinput"><span class="comment">%   distance (mile) | time (s)</span>
+<span class="comment">%   ------------------------------</span>
+<span class="comment">%       0.00        |     0.0</span>
+<span class="comment">%       0.25        |    25.2</span>
+<span class="comment">%       0.50        |    49.2</span>
+<span class="comment">%       1.00        |    96.4</span>
+<span class="comment">%       1.25        |   119.4</span>
+
+fprintf(<span class="string">'Problem 2\n'</span>);
+
+<span class="comment">% Define vectors for distance and time</span>
+distance = [0, 0.25, 0.5, 1, 1.25];
+time = [0, 25.3, 49.2, 96.4, 119.4];
+
+<span class="comment">% Order of data based on proximity to 0.75 miles</span>
+indexArray = [3, 4, 2, 5, 1];
+
+<span class="comment">% Sort arrays based on index</span>
+distanceSorted = distance(indexArray);
+timeSorted = time(indexArray);
+
+<span class="comment">% Initialize Fij using timeSorted array</span>
+inFij = InitializeFij(timeSorted);
+
+<span class="comment">% Generate divided differences matrix using distanceSorted array</span>
+startRow = 2;
+Fij = GenerateFij(distanceSorted, inFij, startRow);
+
+<span class="comment">% Approximate time(0.75 miles)</span>
+inVec = 0.75;
+approxTime = CalcInterPoly(Fij, distanceSorted, inVec);
+
+fprintf(<span class="string">'The time at 0.75 miles is approximately %.1f\n'</span>, approxTime);
+
+<span class="comment">% The actual time at 0.75 miles was 73 seconds according to the homework</span>
+actualTime = 73;
+
+<span class="comment">% Relative error between actual time compared to approximate time</span>
+relError = (abs(actualTime - approxTime) / actualTime) * 100;
+
+fprintf(<span class="string">'The relative error between %.1f seconds and %.1f seconds is %.2f%%\n'</span>, <span class="keyword">...</span>
+    actualTime, approxTime, relError);
+</pre><pre class="codeoutput">Problem 2
+</pre><h2 id="3">Problem 3</h2><p>The following function data represents points on a polynomial (see below comment block). Use divided differences to determine the degree of the polynomial.</p><pre class="codeinput"><span class="comment">%   x   |   f(x)</span>
+<span class="comment">% ------------------</span>
+<span class="comment">%   0   |   0</span>
+<span class="comment">%   1   |   -2</span>
+<span class="comment">%   2   |   -8</span>
+<span class="comment">%   3   |   0</span>
+<span class="comment">%   4   |   64</span>
+<span class="comment">%   5   |   250</span>
+<span class="comment">%   6   |   648</span>
+<span class="comment">%   7   |   1372</span>
+
+fprintf(<span class="string">'Problem 3\n'</span>);
+
+<span class="comment">% Create vectors for the inputs and outputs of function f</span>
+xVec = [0:1:7];
+fofx = [0, -2, -8, 0, 64, 250, 648, 1372];
+
+<span class="comment">% Initialize divided differences matrix</span>
+inFij = InitializeFij(fofx);
+
+<span class="comment">% Generate divided differences matrix</span>
+startRow = 2;
+Fij = GenerateFij(xVec, inFij, startRow);
+
+<span class="comment">% Use real in conjunction with sym to creat a symbolic variable x that</span>
+<span class="comment">% represents a real number. Otherwise, the dot function in CalcInterPoly</span>
+<span class="comment">% returns conj(x) instead. Since I don't know if this divided differences</span>
+<span class="comment">% works the same way with complex numbers, I'm doing this to be safe.</span>
+x = real(sym(<span class="string">'x'</span>));
+
+<span class="comment">% Use expand to multiply out all of the products in each summand and add</span>
+<span class="comment">% them together to get a single polynomial. Use matlabFunction to make this</span>
+<span class="comment">% expression a function of x.</span>
+interPoly = matlabFunction(expand(CalcInterPoly(Fij, xVec, x)))
+
+fprintf(<span class="string">'According to the output, this is a 4th degree polynomial\n'</span>)
+
+<span class="comment">% Check that the symbolic interpolating polynomial interpolates data</span>
+interPolyResults = interPoly(xVec);
+checkMatrix = [fofx; interPolyResults] <span class="comment">% visual check by leaving off ;</span>
+</pre><pre class="codeoutput">Problem 3
+</pre><h2 id="4">Local Helper Functions</h2><p>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</p><h2 id="5">Make Coefficient Vector</h2><pre class="codeinput"><span class="keyword">function</span> coeffVec = MakeCoeffVec(inputMatrix)
+<span class="comment">% This function take a square matrix as its input (in this case, the</span>
+<span class="comment">%   divided differences matrix) and returns a row vector containing all of</span>
+<span class="comment">%   the entries along the princple diagonal</span>
+<span class="comment">%</span>
+<span class="comment">%    INPUT: inputMatrix -  square matrix</span>
+<span class="comment">%   OUTPUT: coeffVec - row vector containing entries allong principle</span>
+<span class="comment">%           diagonal of square</span>
+[numRowFij numColFij] = size(inputMatrix);
+
+n = numRowFij;
+
+<span class="comment">%   make coefficient vector</span>
+coeffVec = [];
+<span class="keyword">for</span> i = 1: n
+    coeffVec(i) = inputMatrix(i,i);
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="lab05Mowen_01.png" alt=""> <pre class="codeoutput">Using the interpolating polynomial, f(0.9) is approximately -4.540223
+</pre><pre class="codeoutput">The time at 0.75 miles is approximately 72.8
+The relative error between 73.0 seconds and 72.8 seconds is 0.26%
+</pre><pre class="codeoutput">
+interPoly =
+
+  function_handle with value:
+
+    @(x)real(x).^3.*-3.0+real(x).^4
+
+According to the output, this is a 4th degree polynomial
+
+checkMatrix =
+
+  Columns 1 through 6
+
+           0          -2          -8           0          64         250
+           0          -2          -8           0          64         250
+
+  Columns 7 through 8
+
+         648        1372
+         648        1372
+
+</pre><h2 id="6">Calculate output of Divided Difference Interpolating Polynomial</h2><pre class="codeinput"><span class="keyword">function</span> approxVec = CalcInterPoly(Fij, inData, inVec)
+<span class="comment">% This function computes the approximated output of the interpolating</span>
+<span class="comment">%   polynomial given a divided difference matrix (Fij), the set of input</span>
+<span class="comment">%   data used to in generating Fij, and the input at which the user would</span>
+<span class="comment">%   like to evaluate the interpolating polynomial</span>
+<span class="comment">%</span>
+<span class="comment">%    INPUT - Fij: divided differences matrix</span>
+<span class="comment">%            inData: input values used in the generation of Fij</span>
+<span class="comment">%            inVec: vector of inputs at which to evaluate the interpolating</span>
+<span class="comment">%            polynomiat</span>
+<span class="comment">%   OUTPUT - approximation: vector containing approximations for inVec</span>
+
+<span class="comment">% Make Coefficient Vector</span>
+coeffVec = MakeCoeffVec(Fij);
+
+approxVec = [];
+<span class="keyword">for</span> i = 1: length(inVec)
+    <span class="comment">% row vec [1,(x-x0),(x-x0)(x-x1),..,(x-x0)(x-x1)..(x - xnMinus1)]</span>
+    prodVec = [1];
+    <span class="keyword">for</span> m = 2: length(inData)
+       prodVec = [prodVec, (inVec(i) - inData(m - 1)) * prodVec(m -1)];
+    <span class="keyword">end</span>
+
+    approximation = dot(prodVec, coeffVec);
+    approxVec = [approxVec, approximation];
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2 id="7">Initialize Divided Differences Matrix F(n,n)</h2><pre class="codeinput"><span class="keyword">function</span> initFij = InitializeFij(outVals)
+<span class="comment">% This function creates a zero matrix and then replaces the first column</span>
+<span class="comment">% with the data in the output vector.</span>
+<span class="comment">%    INPUT - outVals: the output values from the data set</span>
+<span class="comment">%   OUTPUT - initFij: initialized divided difference matrix with first</span>
+<span class="comment">%            column being the output data set and the rest being zeros</span>
+
+i = length(outVals);
+
+initFij = zeros(i,i);
+
+<span class="keyword">for</span> m = 1: i
+    initFij(m,1) = outVals(m);
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2 id="8">Generate Divided Differences Matrix F(n,n)</h2><pre class="codeinput"><span class="keyword">function</span> Fij = GenerateFij(inVals, inFij, startRow)
+<span class="comment">% This function polpulates the divided difference matrix using the input</span>
+<span class="comment">% values and some initial divided difference matrix. The initial divided</span>
+<span class="comment">% difference matrix does not have to be the one generated by InitializeFij.</span>
+<span class="comment">% The algorithm will start on the specified row.</span>
+<span class="comment">%    INPUT - inVals: input values from data set</span>
+<span class="comment">%            inFij: initial divided differences matrix</span>
+<span class="comment">%            startRow: tells the algorithm where to start</span>
+<span class="comment">%   OUTPUT - Fij: completed divided differences matrix</span>
+
+i = length(inVals);
+
+Fij = inFij;
+
+<span class="keyword">for</span> i = startRow: i
+    xi = inVals(i);
+    <span class="keyword">for</span> j = 1: i-1
+        xiMinusj = inVals(i-j);
+        Fij(i, j+1) = (Fij(i,j) - Fij(i-1, j)) / ( xi - xiMinusj );
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Problem 1
+% Use divided differences to construct the interpolating polynomial of 
+% degree four for the following data:
+
+%       x   | f(x)
+%       REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+%       0.0 | -6.00000
+%       0.1 | -5.89483
+%       0.3 | -5.65014
+%       0.6 | -5.17788
+%       1.0 | -4.28172
+
+fprintf('Problem 1\n')
+
+% create input and output data vectors
+inData = [0.0, 0.1, 0.3, 0.6, 1.0];
+outData = [-6.00000, -5.89483, -5.65014, -5.17788, -4.28172];
+
+%Intialized divided differences matrix
+inFij = InitializeFij(outData);
+
+% Generate divided differences matrix
+startRow = 2;
+inFij = GenerateFij(inData, inFij, startRow);
+
+% Create set of xVals in -0.5..1.5
+xVals = [-0.5:0.1:1.5];
+% Evaluate the interpolating polynomial at each xVals
+yVals1a = CalcInterPoly(inFij, inData, xVals);
+
+% Plot original data points and the interpolating polynomial on same graph
+figure(1)
+plot(inData, outData, 'ro')
+hold on
+plot(xVals, yVals1a, 'k-')
+
+% 1b) Calculate f(0.9) using interpolating polynomial
+inVec = [0.9];
+fof0point9 = CalcInterPoly(inFij, inData, inVec);
+fprintf('Using the interpolating polynomial, f(0.9) is approximately %.6f\n', fof0point9);
+
+% Problem 1c
+
+% Add f(1.1) = -3.99583 to data set
+% Define vector for additional input data
+addInData = [1.1];
+% Update inData vector with additional input data vector
+inData = [inData, addInData];
+% Define vector for additional output data
+addOutData = [-3.99583];
+% Update inData vector with additional output data vector
+outData = [outData, addOutData];
+
+% get size of additional output data vector
+sizeOfAddOutData = length(addOutData);
+
+% get size of Fij
+[row, col] = size(inFij);
+
+% append the additional output data to the end of Fij
+inFij(row+1:1:row + sizeOfAddOutData,1) = [addOutData]';
+
+%Fill in Fij for additional Data
+startRow = row + 1;
+inFij = GenerateFij(inData, inFij, startRow);
+
+% Calculate new yVals based on new interpolating polynomial
+yVals1c = CalcInterPoly(inFij, inData, xVals);
+
+% Plot origdata points and both interpolating polynomials on same graph
+figure(2)
+plot(inData, outData, 'ro')
+hold on
+plot(xVals, yVals1a, 'k-')
+hold on
+plot(xVals, yVals1c, 'b-')
+
+%% Problem 2
+% The fastest time ever recorded in the Kentucky Derby was by a horse named 
+% Secretariat in 1973. He covered the 1 1\4 mile track in 1:59.4 (one  
+% minute and 59.4 seconds). Times at the quarter-mile, half-mile, and mile  
+% poles were 0:25.2, 0:49.2, and 1:36.4. Use interpolation to predict the 
+% time at the three-quarter mile pole and compare this to the actual time 
+% of 1:13.
+
+%   distance (mile) | time (s)
+%   REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+%       0.00        |     0.0
+%       0.25        |    25.2
+%       0.50        |    49.2
+%       1.00        |    96.4
+%       1.25        |   119.4
+
+fprintf('Problem 2\n');
+
+% Define vectors for distance and time
+distance = [0, 0.25, 0.5, 1, 1.25];
+time = [0, 25.3, 49.2, 96.4, 119.4];
+
+% Order of data based on proximity to 0.75 miles
+indexArray = [3, 4, 2, 5, 1];
+
+% Sort arrays based on index
+distanceSorted = distance(indexArray);
+timeSorted = time(indexArray);
+
+% Initialize Fij using timeSorted array
+inFij = InitializeFij(timeSorted);
+
+% Generate divided differences matrix using distanceSorted array
+startRow = 2;
+Fij = GenerateFij(distanceSorted, inFij, startRow);
+
+% Approximate time(0.75 miles)
+inVec = 0.75;
+approxTime = CalcInterPoly(Fij, distanceSorted, inVec);
+
+fprintf('The time at 0.75 miles is approximately %.1f\n', approxTime);
+
+% The actual time at 0.75 miles was 73 seconds according to the homework
+actualTime = 73;
+
+% Relative error between actual time compared to approximate time
+relError = (abs(actualTime - approxTime) / actualTime) * 100;
+
+fprintf('The relative error between %.1f seconds and %.1f seconds is %.2f%%\n', ...
+    actualTime, approxTime, relError);
+
+%% Problem 3
+% The following function data represents points on a polynomial (see below
+% comment block). Use divided differences to determine the degree of the 
+% polynomial.
+
+%   x   |   f(x)
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+%   0   |   0
+%   1   |   -2
+%   2   |   -8
+%   3   |   0
+%   4   |   64
+%   5   |   250
+%   6   |   648
+%   7   |   1372
+
+fprintf('Problem 3\n');
+
+% Create vectors for the inputs and outputs of function f
+xVec = [0:1:7];
+fofx = [0, -2, -8, 0, 64, 250, 648, 1372];
+
+% Initialize divided differences matrix
+inFij = InitializeFij(fofx);
+
+% Generate divided differences matrix
+startRow = 2;
+Fij = GenerateFij(xVec, inFij, startRow);
+
+% Use real in conjunction with sym to creat a symbolic variable x that
+% represents a real number. Otherwise, the dot function in CalcInterPoly
+% returns conj(x) instead. Since I don't know if this divided differences
+% works the same way with complex numbers, I'm doing this to be safe.
+x = real(sym('x'));
+
+% Use expand to multiply out all of the products in each summand and add
+% them together to get a single polynomial. Use matlabFunction to make this
+% expression a function of x.
+interPoly = matlabFunction(expand(CalcInterPoly(Fij, xVec, x)))
+
+fprintf('According to the output, this is a 4th degree polynomial\n')
+
+% Check that the symbolic interpolating polynomial interpolates data
+interPolyResults = interPoly(xVec);
+checkMatrix = [fofx; interPolyResults] % visual check by leaving off ;
+
+
+%% Local Helper Functions
+% +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+%% Make Coefficient Vector
+function coeffVec = MakeCoeffVec(inputMatrix)
+% This function take a square matrix as its input (in this case, the
+%   divided differences matrix) and returns a row vector containing all of
+%   the entries along the princple diagonal
+%
+%    INPUT: inputMatrix -  square matrix
+%   OUTPUT: coeffVec - row vector containing entries allong principle 
+%           diagonal of square
+[numRowFij numColFij] = size(inputMatrix);
+
+n = numRowFij;
+
+%   make coefficient vector
+coeffVec = [];
+for i = 1: n
+    coeffVec(i) = inputMatrix(i,i);
+end
+end
+
+%% Calculate output of Divided Difference Interpolating Polynomial
+function approxVec = CalcInterPoly(Fij, inData, inVec)
+% This function computes the approximated output of the interpolating
+%   polynomial given a divided difference matrix (Fij), the set of input 
+%   data used to in generating Fij, and the input at which the user would
+%   like to evaluate the interpolating polynomial
+%
+%    INPUT - Fij: divided differences matrix
+%            inData: input values used in the generation of Fij
+%            inVec: vector of inputs at which to evaluate the interpolating
+%            polynomiat
+%   OUTPUT - approximation: vector containing approximations for inVec 
+
+% Make Coefficient Vector
+coeffVec = MakeCoeffVec(Fij);
+
+approxVec = [];
+for i = 1: length(inVec)
+    % row vec [1,(x-x0),(x-x0)(x-x1),..,(x-x0)(x-x1)..(x - xnMinus1)]
+    prodVec = [1];
+    for m = 2: length(inData)
+       prodVec = [prodVec, (inVec(i) - inData(m - 1)) * prodVec(m -1)];
+    end
+
+    approximation = dot(prodVec, coeffVec);
+    approxVec = [approxVec, approximation];
+end
+end 
+
+%% Initialize Divided Differences Matrix F(n,n)
+function initFij = InitializeFij(outVals)
+% This function creates a zero matrix and then replaces the first column
+% with the data in the output vector.
+%    INPUT - outVals: the output values from the data set
+%   OUTPUT - initFij: initialized divided difference matrix with first
+%            column being the output data set and the rest being zeros
+
+i = length(outVals);
+
+initFij = zeros(i,i);
+
+for m = 1: i
+    initFij(m,1) = outVals(m);
+end
+end
+
+%% Generate Divided Differences Matrix F(n,n)
+function Fij = GenerateFij(inVals, inFij, startRow)
+% This function polpulates the divided difference matrix using the input
+% values and some initial divided difference matrix. The initial divided
+% difference matrix does not have to be the one generated by InitializeFij.
+% The algorithm will start on the specified row.
+%    INPUT - inVals: input values from data set
+%            inFij: initial divided differences matrix
+%            startRow: tells the algorithm where to start
+%   OUTPUT - Fij: completed divided differences matrix
+
+i = length(inVals);
+
+Fij = inFij;
+
+for i = startRow: i
+    xi = inVals(i);
+    for j = 1: i-1
+        xiMinusj = inVals(i-j);
+        Fij(i, j+1) = (Fij(i,j) - Fij(i-1, j)) / ( xi - xiMinusj );
+    end
+end
+
+end
+##### SOURCE END #####
+--></body></html>
